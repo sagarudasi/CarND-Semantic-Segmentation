@@ -54,16 +54,22 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     :param num_classes: Number of classes to classify
     :return: The Tensor for the last layer of output
     """
-    l7_conv_1x1 = tf.layers.conv2d(vgg_layer7_out, num_classes, 1, strides=(1,1), padding='same', kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
-    output = tf.layers.conv2d_transpose(l7_conv_1x1, num_classes, 4, strides=(2, 2), padding='same', kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
+    l7_conv_1x1 = tf.layers.conv2d(vgg_layer7_out, num_classes, 1, strides=(1,1), padding='same', kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
+     kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
+    output = tf.layers.conv2d_transpose(l7_conv_1x1, num_classes, 4, strides=(2, 2), padding='same', kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
+     kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
 
-    l4_conv_1x1 = tf.layers.conv2d(vgg_layer4_out, num_classes, 1, strides=(1,1), padding='same', kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
+    l4_conv_1x1 = tf.layers.conv2d(vgg_layer4_out, num_classes, 1, strides=(1,1), padding='same', kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
+     kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
     output = tf.add(output,l4_conv_1x1)
-    output = tf.layers.conv2d_transpose(output, num_classes, 4, strides=(2, 2), padding='same', kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
+    output = tf.layers.conv2d_transpose(output, num_classes, 4, strides=(2, 2), padding='same', kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
+     kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
     
-    l3_conv_1x1 = tf.layers.conv2d(vgg_layer3_out, num_classes, 1, strides=(1,1), padding='same', kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
+    l3_conv_1x1 = tf.layers.conv2d(vgg_layer3_out, num_classes, 1, strides=(1,1), padding='same', kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
+     kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
     output = tf.add(output, l3_conv_1x1)
-    output = tf.layers.conv2d_transpose(output, num_classes, 16, strides=(8, 8), padding='same', kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
+    output = tf.layers.conv2d_transpose(output, num_classes, 16, strides=(8, 8), padding='same', kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),
+     kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
 
     return output
 tests.test_layers(layers)
@@ -119,8 +125,8 @@ tests.test_train_nn(train_nn)
 def run():
     num_classes = 2
     image_shape = (160, 576)
-    epochs = 60
-    batch_size = 16
+    epochs = 20
+    batch_size = 8
     data_dir = './data'
     runs_dir = './runs'  
     correct_label = tf.placeholder(tf.float32, (None, None, None, num_classes), name='correct_label')
